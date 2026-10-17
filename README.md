@@ -1,5 +1,6 @@
-> **SAP 登录修复版源码**：构建与真机安装已通过，用户已确认修复版在真机上验证可使用。
-> 修复说明、验证范围和构建步骤见 [README-SAP.md](README-SAP.md)。
+> **本 fork 修复的问题：Apple ID 登录失败 / HTTP 403。** 原认证流程缺少 SAP `X-Apple-ActionSignature` 签名，本 fork 补齐了本机签名，并覆盖登录请求的重试、重定向、验证码提交和 token 刷新路径。
+> **真机验证**：2026-10-17，用户已确认 Asspp 4.2.0 修复版在 iPhone 18 Pro Max / iOS 27.0.1 上可以正常使用。
+> 修复原理、平台范围和构建步骤见 [README-SAP.md](README-SAP.md)；构建本 fork 的修复版请按该说明操作。
 
 # Asspp
 

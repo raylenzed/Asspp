@@ -1,5 +1,9 @@
 # 爱啪思道
 
+> **本 fork 修复的问题：Apple ID 登录失败 / HTTP 403。** 已补齐 SAP `X-Apple-ActionSignature` 本机签名，覆盖登录、验证码提交、重试、重定向和 token 刷新路径。
+> **真机验证**：2026-10-17，用户已确认修复版在 iPhone 18 Pro Max / iOS 27.0.1 上可以正常使用。
+> 修复原理、平台范围与修复版构建步骤见 [README-SAP.md](../../../README-SAP.md)。
+
 **多账号、多地区 App Store 管理神器。**
 
 Asspp 专为需要管理**多个 Apple ID** 和**跨区下载**的用户打造。你可以在不同国家的 App Store 之间无缝切换，随意浏览和下载应用，完全无需退出系统账号。
