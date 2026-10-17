@@ -6,9 +6,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Asspp is a multi-account App Store management app (iOS + macOS) for searching, downloading, and installing IPA files. It uses an Xcode workspace (`Asspp.xcworkspace`) with SPM dependencies including [ApplePackage](https://github.com/Lakr233/ApplePackage), the core library for App Store API communication, IPA handling, and signature injection.
+Asspp is a multi-account App Store management app (iOS + macOS) for searching, downloading, and installing IPA files. It uses an Xcode workspace (`Asspp.xcworkspace`) with SPM dependencies including the locally vendored `Packages/ApplePackage` (based on [ApplePackage](https://github.com/Lakr233/ApplePackage)), the core library for App Store API communication, IPA handling, and signature injection.
 
-Bundle ID: `wiki.qaq.Asspp`. Deployment targets: iOS 17.0, macOS 15.0. Supports iPhone, iPad, and Mac (native, not Catalyst). No test targets exist.
+Bundle ID: `wiki.qaq.Asspp`. Deployment targets: iOS 17.0, macOS 15.0. Supports iPhone, iPad, and Mac (native, not Catalyst). The app has no Xcode test target; the local ApplePackage contains authentication unit tests and a credential-free WebKit SAP test.
 
 ## Build Commands
 
@@ -75,7 +75,7 @@ SwiftUI views organized by feature: Account, Search, Download, Installed (macOS 
 
 ## Dependencies (SPM via Xcode)
 
-- **ApplePackage** (remote) — App Store protocol, IPA handling
+- **ApplePackage** (local `Packages/ApplePackage`) — App Store protocol, IPA handling, and SAP authentication repair
 - **Vapor** — HTTPS server for iOS OTA installation
 - **Digger** — Download manager with progress/speed tracking
 - **Kingfisher** — Async image loading

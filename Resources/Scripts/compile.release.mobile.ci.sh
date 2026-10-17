@@ -9,10 +9,10 @@ WORKSPACE="$SRCROOT/Asspp.xcworkspace"
 SCHEME="Asspp"
 BUILD_PRODUCT="Asspp.app"
 
-cd $SRCROOT
+cd "$SRCROOT"
 
-git clean -fdx -f
-git reset --hard
+# Build the supplied checkout, including local patches and prepared SAP assets.
+python3 "$SRCROOT/Resources/Scripts/prepare.sap.runtime.py"
 
 # Generate Developer.xcconfig for CI (codesign completely disabled)
 cat >"$SRCROOT/Configuration/Developer.xcconfig" <<'EOF'

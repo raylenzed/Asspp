@@ -129,3 +129,20 @@ Configuration/Developer.xcconfig
 References/
 
 Foundation/ApplePackage/
+
+# Local signing, private handoff data, and generated artifacts
+/Certificates/
+/session/
+/changes/
+*.p12
+*.pfx
+*.pem
+*.key
+*.cer
+*.csr
+*.mobileprovision
+*.provisionprofile
+*.ipa.sha256
+.env.*
+__pycache__/
+*.py[cod]

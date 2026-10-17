@@ -1,0 +1,4 @@
+.build/
+Sources/AppleSAPRuntime/Runtime/sap.wasm
+Sources/AppleSAPRuntime/Runtime/unicorn_x86.js
+Sources/AppleSAPRuntime/Runtime/wasm_exec.js

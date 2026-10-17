@@ -1,3 +1,6 @@
+> **SAP 登录修复版源码**：构建与真机安装已通过，用户已确认修复版在真机上验证可使用。
+> 修复说明、验证范围和构建步骤见 [README-SAP.md](README-SAP.md)。
+
 # Asspp
 
 **The Ultimate Multi-Region App Store Manager.**

@@ -1,0 +1,79 @@
+Asspp local SAP authentication patch
+
+Base: Lakr233/ApplePackage 1.2.7
+Revision: 28710fec47fa89dfdedf2bf47cc284a2334ddfdc
+Upstream Sources, Tests, Package.swift and MIT license are vendored locally
+so the Xcode workspace uses this authentication implementation.
+
+macOS:
+CommerceKit CKSigningSession signs the exact serialized login plist.
+The Objective-C bridge uses ARC, explicit NSError bridging, and a 30-second
+session-opening timeout. Reference: ipatool-sapfix 2.3.2-sapfix.2; adapted
+code is covered by LICENSE.ipatool.
+
+Ordinary iOS app builds:
+AppleSAPRuntime runs a pinned Go SAP engine and Unicorn WebAssembly runtime
+inside a non-persistent WKWebView. Login plaintext remains local. Native
+URLSession sends only SAP certificate/setup traffic to the two fixed Apple
+endpoints. The bundled page has no remote scripts or arbitrary transport.
+A SAP session is reused within one authentication flow. Every request,
+redirect and retry signs its exact final XML bytes. Account rotation uses
+the same implementation. No unsigned request is sent if signing fails.
+
+Assets are fetched at build time by Resources/Scripts/prepare.sap.runtime.py
+from dompling/Jsbox-Ipa commit 620649f818926a6c313c2cf3d4555ae4c318ffa1.
+SHA-256 checks pin all three artifacts. They are bundled into the IPA;
+no runtime download or signing server is necessary. Source provenance is
+an upstream binary artifact; this repository does not reproduce sap.wasm
+from its original Go source.
+
+Authentication also normalizes the Apple MZFinance endpoint trailing slash,
+uses attempts 1 and 2, removes whitespace from the six-digit 2FA code,
+and rejects credential redirects outside Apple authentication endpoints.
+Cookies, tokens and SAP signatures are redacted from diagnostic headers.
+
+Validation completed in the Linux environment:
+- Runtime asset hashes verified.
+- JavaScript syntax and Python preparation script syntax checked.
+- Apple public bag currently advertises SAP version 200 and MZFinance auth.
+- Credential-free integration test loaded the actual bundled WASM, completed
+  the Apple certificate/setup exchange (HTTP 200), and produced a 501-byte
+  signature for a non-secret test payload.
+- No Apple ID/password or authentication request was sent by that test.
+- macOS WebKit XCTest completed the SAP handshake and two signatures in
+  the same session. The restricted asspp-sap://runtime scheme serves only
+  the bundled assets, avoiding file:// XMLHttpRequest restrictions.
+
+Apple-platform validation:
+- iOS Release compilation succeeded on Xcode 26.2 in GitHub macos-26 CI.
+- Final IPA built and downloaded successfully. ZIP integrity, arm64 Mach-O,
+  bundle identifier, and all five bundled SAP asset hashes verified in CI
+  and again locally.
+- Artifact: artifacts/Asspp-SAP.ipa (39,504,313 bytes), version 4.2.0,
+  minimum iOS 17.0, no embedded provisioning profile; requires sideload signing.
+- SHA-256: 79b7e2df2f2764e059b945604702b767cfcbaa18c4a47f519d34f61cc6f0276b
+- Successful private CI run:
+  https://github.com/machinesvoice/Asspp-sap-build/actions/runs/38662339936
+- Built source commit: 488c184db43814e2c24d2a60f28934d114ffd153.
+
+Device validation update (2026-10-17):
+- iOS Release built locally with Xcode 27.1; IPA structure and SAP assets verified.
+- Signed test build installed and launched on iPhone 18 Pro Max / iOS 27.0.1.
+- The user confirmed they tested the repaired app on that device and it is usable.
+This user confirmation supersedes the earlier pending real-device validation
+status; no separate claim is made about unreported test cases or platforms.
+
+Build:
+python3 Resources/Scripts/prepare.sap.runtime.py --public-certificates
+./Resources/Scripts/compile.release.mobile.ci.sh "$PWD" "$PWD/Asspp-SAP.ipa"
+Use Asspp.xcworkspace with Xcode 26.2 or newer. The CI packaging script no
+longer deletes local patches or prepared resources. CI produces an unsigned
+IPA for signing with the user's normal sideloading tool.
+
+Private build source snapshots exclude all certificate/PEM files. The
+--public-certificates option restores ONLY upstream's publicly distributed
+localhost OTA test certificate/key/CA with immutable hashes, on the build
+machine. It does not upload user signing certificates or Apple credentials.
+
+The SAP iOS IPA workflow compiles and tests the WebView first, then builds
+and verifies the IPA and uploads it as a private Actions artifact.

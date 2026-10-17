@@ -1,0 +1,41 @@
+name: SAP iOS IPA
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ipa:
+    runs-on: macos-26
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode
+        run: |
+          set -euo pipefail
+          if [ -d /Applications/Xcode_26.2.app ]; then
+            sudo xcode-select -s /Applications/Xcode_26.2.app
+          fi
+          xcodebuild -version
+      - name: Prepare verified local SAP runtime
+        run: python3 Resources/Scripts/prepare.sap.runtime.py --public-certificates
+      - name: Install build formatter
+        run: brew install xcbeautify
+      - name: Verify local WebView signer without credentials
+        env:
+          ASSPP_TEST_APPLE_SAP: "1"
+        run: bash Resources/Scripts/check.sap.webview.sh
+      - name: Compile iOS IPA
+        run: ./Resources/Scripts/compile.release.mobile.ci.sh "$PWD" "$RUNNER_TEMP/Asspp-SAP.ipa"
+      - name: Verify IPA
+        run: python3 Resources/Scripts/verify.sap.ipa.py "$RUNNER_TEMP/Asspp-SAP.ipa"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Asspp-SAP-IPA
+          if-no-files-found: ignore
+          path: |
+            ${{ runner.temp }}/Asspp-SAP.ipa
+            ${{ runner.temp }}/Asspp-SAP.ipa.sha256
